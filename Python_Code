@@ -1,0 +1,30 @@
+# script was assembled and adapted from various sources
+# assumes you have an open MXD with the second data frame set up with data-driven pages, and then loops through the first layer in the first data frame to match the DDP layer.
+# hopefully, you can adapt it to your purposes.
+
+
+
+... mxd = arcpy.mapping.MapDocument("CURRENT")                  # Sets current open map as MXD
+... df = arcpy.mapping.ListDataFrames(mxd, "Layers")[0]         # df = 1st data frame in TOC
+... ddp = mxd.dataDrivenPages   # Establishes DDP (already set up in arcmap for the second data frame in TOC)
+... lyr = arcpy.mapping.ListLayers(mxd, "", df)[0]              # Lyr = first layer in first data frame
+... rows = arcpy.SearchCursor(lyr.dataSource)                   # cycles through rows in a layer
+... def extFunc():                                              # This function loops though rows searching for a match between "PageName" and idxname (which in this case is the DDP "Pagename", as established later
+...     for row in rows:
+...         if row.getValue("PageName") != idxname:             # prints something so you know it's working
+...             print '...'
+...         else:
+...             print 'I found the layout extent'               # confirmation of match
+...             newDFExt = row.getValue("Shape").extent
+...             df.extent = newDFExt                            # returns extent of matched row for data frame 1
+...             return df.extent
+... for pageNum in range(1, ddp.pageCount + 1):                 # loops through DDP pages
+...     ddp.currentPageID = pageNum                             # Sets current page to "pageNum" in DDP properties
+...     idxname = mxd.dataDrivenPages.pageRow.PageName          # Sets "PageName" field as idxfield for use in pre-defined fuction
+...     extFunc()                                               # Executes function
+...     df.scale = 24000                                        # sets Data frame 1 scale
+...     print str(df.extent)                                    # double checks the extent 
+...     print idxname                                           # prints idxname
+...     print 'Printing page ' + str(pageNum) + ' of ' + str(ddp.pageCount)     # shows a count of pages printing         
+...     arcpy.mapping.ExportToJPEG(mxd, r"Drive:\folder\filename-" + str(idxname) + ".jpg", resolution=300)
+... del mxd                                                     # exports to 300DPI JPG file and appends idxname - choose                                                                    your folder and filename
