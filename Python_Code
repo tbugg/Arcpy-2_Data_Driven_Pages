@@ -27,4 +27,4 @@
 ...     print idxname                                           # prints idxname
 ...     print 'Printing page ' + str(pageNum) + ' of ' + str(ddp.pageCount)     # shows a count of pages printing         
 ...     arcpy.mapping.ExportToJPEG(mxd, r"Drive:\folder\filename-" + str(idxname) + ".jpg", resolution=300)
-... del mxd                                                     # exports to 300DPI JPG file and appends idxname - choose                                                                    your folder and filename
+... del mxd                                                     # exports to 300DPI JPG file and appends idxname - choose your folder and filename
